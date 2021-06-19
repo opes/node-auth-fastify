@@ -1,0 +1,21 @@
+{
+  "name": "node-auth-fastify",
+  "version": "1.0.0",
+  "description": "A super simple example of a user authentication & authorization API in Node.js using Fastify, MongoDB, JWTs, and sessions.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start:watch": "nodemon ./src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "fastify": "^3.18.0",
+    "fastify-static": "^4.2.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
