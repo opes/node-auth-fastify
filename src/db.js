@@ -1,7 +1,7 @@
 import mongodb from 'mongodb';
 
 const MongoClient = mongodb.MongoClient;
-const uri = process.env.MONGO_URI;
+const uri = encodeURI(process.env.MONGO_URI);
 
 export const client = new MongoClient(uri, { useNewUrlParser: true });
 
