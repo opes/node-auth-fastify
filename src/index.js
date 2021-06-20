@@ -8,7 +8,7 @@ import { connectDb } from './db.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DOMAIN = process.env.DOMAIN || 'http://localhost';
+const APP_URI = process.env.APP_URI || 'http://localhost';
 const PORT = process.env.PORT || 7891;
 
 const app = fastify({ logger: true });
@@ -19,7 +19,7 @@ async function start() {
       root: path.join(__dirname, 'public'),
     });
 
-    console.log(`🚀 Server launching on ${DOMAIN}:${PORT}`);
+    console.log(`🚀 Server launching on ${APP_URI}:${PORT}`);
     await app.listen(PORT);
   } catch (err) {
     fastify.log.error(err);
@@ -27,6 +27,4 @@ async function start() {
   }
 }
 
-connectDb()
-  .then(() => start())
-  .catch((e) => console.error(e));
+connectDb().then(start).catch(console.error);
