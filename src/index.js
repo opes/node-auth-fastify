@@ -3,6 +3,7 @@ import { fastify } from 'fastify';
 import fastifyStatic from 'fastify-static';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { connectDb } from './db.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,4 +27,6 @@ async function start() {
   }
 }
 
-start();
+connectDb()
+  .then(() => start())
+  .catch((e) => console.error(e));
