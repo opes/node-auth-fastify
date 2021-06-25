@@ -32,6 +32,7 @@ export default class Account {
   }
 
   toJSON() {
+    // Omit the password when calling .toJSON()
     const { password, ...accountWithoutPassword } = this;
     return accountWithoutPassword;
   }
