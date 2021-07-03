@@ -1,4 +1,3 @@
-import bcrypt from 'bcrypt';
 import { client } from '../utils/db.js';
 
 const accounts = client.db(process.env.DB_NAME).collection('accounts');
@@ -19,15 +18,20 @@ export default class Account {
     const exists = await accounts.findOne({ 'email.address': email });
     if (exists) throw new Error('Account exists for the given email');
 
-    const hash = bcrypt.hashSync(password, Number(process.env.SALT_ROUNDS));
     const { insertedId } = await accounts.insertOne({
       email: {
         address: email,
         verified: false,
       },
-      password: hash,
+      password,
     });
     const account = await accounts.findOne({ _id: insertedId });
+    return new Account(account);
+  }
+
+  static async findByEmail(email) {
+    const account = await accounts.findOne({ 'email.address': email });
+    if (!account) return null;
     return new Account(account);
   }
 

@@ -1,6 +1,7 @@
 import './env.js';
 import { fastify } from 'fastify';
 import fastifyStatic from 'fastify-static';
+import fastifyCookie from 'fastify-cookie';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -17,6 +18,10 @@ const app = fastify({ logger: false });
 
 async function start() {
   try {
+    app.register(fastifyCookie, {
+      secret: process.env.COOKIE_SECRET,
+    });
+
     app.register(fastifyStatic, {
       root: path.join(__dirname, 'public'),
     });
