@@ -38,22 +38,20 @@ export default async function routes(app, options) {
       const account = await AccountService.verify(req.body);
       if (!account) throw new Error('Account does not exist');
 
-      const session = await SessionService.create(account.id, {
-        ip: req.ip,
-        userAgent: req.headers['user-agent'],
-      });
+      await SessionService.create(
+        {
+          ip: req.ip,
+          userAgent: req.headers['user-agent'],
+          userId: account.id,
+        },
+        reply
+      );
 
-      reply
-        .setCookie('session', session, {
-          path: '/',
-          domain: 'localhost',
-          httpOnly: true,
-        })
-        .send({
-          success: true,
-          message: `Logged in!`,
-          payload: account.toJSON(),
-        });
+      reply.send({
+        success: true,
+        message: `Logged in!`,
+        payload: account.toJSON(),
+      });
     } catch (err) {
       app.log.error(err);
       reply.status(500).send({ success: false, message: err.message });
