@@ -5,6 +5,34 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>node-auth-fastify</title>
+    <style>
+      html,
+      body {
+        font-family: sans-serif;
+        background-color: #111;
+        color: #eee;
+        padding: 1rem;
+      }
+
+      pre {
+        width: 100vw;
+        white-space: break-spaces;
+        word-break: break-word;
+      }
+
+      input,
+      button {
+        padding: 0.2rem;
+      }
+
+      hr {
+        margin: 3rem 0;
+      }
+
+      button {
+        width: 5rem;
+      }
+    </style>
   </head>
 
   <body>
@@ -26,8 +54,6 @@
       <button type="submit">Register</button>
     </form>
 
-    <hr />
-
     <h3>Sign In</h3>
     <form id="login-form" action="/api/v1/accounts/login" method="POST">
       <input
@@ -44,6 +70,11 @@
       />
       <button type="submit">Sign In</button>
     </form>
+
+    <hr />
+
+    <h3 id="response-header"></h3>
+    <pre id="response-body"></pre>
 
     <script type="application/javascript">
       async function handleSubmit(event) {
@@ -64,7 +95,9 @@
 
           const body = await res.json();
 
-          console.log(body);
+          document.querySelector('#response-header').textContent = 'Response:';
+          document.querySelector('#response-body').textContent =
+            JSON.stringify(body);
         } catch (err) {
           console.error(err.message);
         }

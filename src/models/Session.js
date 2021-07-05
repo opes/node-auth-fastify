@@ -5,7 +5,7 @@ const sessions = client.db(process.env.DB_NAME).collection('sessions');
 export default class Session {
   id;
   sessionToken;
-  userId;
+  accountId;
   userAgent;
   ip;
   valid;
@@ -15,7 +15,7 @@ export default class Session {
   constructor(item) {
     this.id = item._id.toString();
     this.sessionToken = item.sessionToken;
-    this.userId = item.userId;
+    this.accountId = item.accountId;
     this.userAgent = item.userAgent;
     this.ip = item.ip;
     this.valid = item.valid;
@@ -25,7 +25,7 @@ export default class Session {
 
   static async create({
     sessionToken,
-    userId,
+    accountId,
     userAgent,
     ip,
     valid,
@@ -34,7 +34,7 @@ export default class Session {
   }) {
     const { insertedId } = await sessions.insertOne({
       sessionToken,
-      userId,
+      accountId,
       userAgent,
       ip,
       valid,

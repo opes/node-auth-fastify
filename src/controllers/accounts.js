@@ -14,7 +14,9 @@ export default async function routes(app, options) {
   const { default: AccountService } = await import(
     '../services/AccountService.js'
   );
-
+  const { default: AuthService } = await import(
+    '../services/AuthService.js'
+  );
   const { default: SessionService } = await import(
     '../services/SessionService.js'
   );
@@ -35,22 +37,12 @@ export default async function routes(app, options) {
 
   app.post('/login', opts, async (req, reply) => {
     try {
-      const account = await AccountService.verify(req.body);
-      if (!account) throw new Error('Account does not exist');
-
-      await SessionService.create(
-        {
-          ip: req.ip,
-          userAgent: req.headers['user-agent'],
-          userId: account.id,
-        },
-        reply
-      );
+      await AuthService.login(req, reply);
 
       reply.send({
         success: true,
         message: `Logged in!`,
-        payload: account.toJSON(),
+        payload: SessionService.currentUser(req),
       });
     } catch (err) {
       app.log.error(err);

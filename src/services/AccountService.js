@@ -4,6 +4,8 @@ import Account from '../models/Account.js';
 export default class AccountService {
   static async register({ email, password }) {
     try {
+      if (!email || !password)
+        throw new Error('Email & password are required.');
       const hash = bcrypt.hashSync(password, Number(process.env.SALT_ROUNDS));
       return Account.create({ email, password: hash });
     } catch (err) {
@@ -13,6 +15,8 @@ export default class AccountService {
 
   static async verify({ email, password }) {
     try {
+      if (!email || !password)
+        throw new Error('Email & password are required.');
       const account = await Account.findByEmail(email);
       if (!account) throw new Error('Invalid email/password');
 
