@@ -14,16 +14,12 @@ export default async function routes(app, options) {
   const { default: AccountService } = await import(
     '../services/AccountService.js'
   );
-  const { default: AuthService } = await import(
-    '../services/AuthService.js'
-  );
-  const { default: SessionService } = await import(
-    '../services/SessionService.js'
-  );
+  const { default: AuthService } = await import('../services/AuthService.js');
 
   app.post('/register', opts, async (req, reply) => {
     try {
       const account = await AccountService.register(req.body);
+
       reply.send({
         success: true,
         message: `Account registered!`,
@@ -42,7 +38,20 @@ export default async function routes(app, options) {
       reply.send({
         success: true,
         message: `Logged in!`,
-        payload: SessionService.currentUser(req),
+      });
+    } catch (err) {
+      app.log.error(err);
+      reply.status(500).send({ success: false, message: err.message });
+    }
+  });
+
+  app.post('/logout', async (req, reply) => {
+    try {
+      await AuthService.logout(req, reply);
+
+      reply.send({
+        success: true,
+        message: `Logged out!`,
       });
     } catch (err) {
       app.log.error(err);

@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 
 import { connectDb } from './utils/db.js';
 import accountsController from './controllers/accounts.js';
+import dashboardController from './controllers/dashboard.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,6 +28,7 @@ async function start() {
     });
 
     app.register(accountsController, { prefix: '/api/v1/accounts' });
+    app.register(dashboardController, { prefix: '/api/v1/dashboard' });
 
     console.log(`🚀 Server launching on ${APP_URI}:${PORT}`);
     await app.listen(PORT);

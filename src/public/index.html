@@ -71,6 +71,11 @@
       <button type="submit">Sign In</button>
     </form>
 
+    <h3>Sign Out</h3>
+    <form id="logout-form" action="/api/v1/accounts/logout" method="POST">
+      <button type="submit">Sign Out</button>
+    </form>
+
     <hr />
 
     <h3 id="response-header"></h3>
@@ -105,9 +110,11 @@
 
       const registerForm = document.querySelector('#register-form');
       const loginForm = document.querySelector('#login-form');
+      const logoutForm = document.querySelector('#logout-form');
 
       registerForm.addEventListener('submit', handleSubmit);
       loginForm.addEventListener('submit', handleSubmit);
+      logoutForm.addEventListener('submit', handleSubmit);
     </script>
   </body>
 </html>

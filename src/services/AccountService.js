@@ -6,7 +6,9 @@ export default class AccountService {
     try {
       if (!email || !password)
         throw new Error('Email & password are required.');
+
       const hash = bcrypt.hashSync(password, Number(process.env.SALT_ROUNDS));
+
       return Account.create({ email, password: hash });
     } catch (err) {
       throw new Error(err.message);
@@ -17,6 +19,7 @@ export default class AccountService {
     try {
       if (!email || !password)
         throw new Error('Email & password are required.');
+
       const account = await Account.findByEmail(email);
       if (!account) throw new Error('Invalid email/password');
 

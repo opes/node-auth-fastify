@@ -1,3 +1,5 @@
+import mongo from 'mongodb';
+const { ObjectId } = mongo;
 import { client } from '../utils/db.js';
 
 const accounts = client.db(process.env.DB_NAME).collection('accounts');
@@ -26,18 +28,28 @@ export default class Account {
       password,
     });
     const account = await accounts.findOne({ _id: insertedId });
+
     return new Account(account);
   }
 
   static async findByEmail(email) {
     const account = await accounts.findOne({ 'email.address': email });
     if (!account) return null;
+
+    return new Account(account);
+  }
+
+  static async findById(id) {
+    const account = await accounts.findOne({ _id: ObjectId(id) });
+    if (!account) return null;
+
     return new Account(account);
   }
 
   toJSON() {
     // Omit the password when calling .toJSON()
     const { password, ...accountWithoutPassword } = this;
+
     return accountWithoutPassword;
   }
 }
