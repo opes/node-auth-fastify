@@ -92,13 +92,15 @@ export default class AuthService {
     reply
       .setCookie('accessToken', accessToken, {
         path: '/',
-        domain: 'localhost',
+        domain: process.env.ROOT_DOMAIN,
         httpOnly: true,
+        secure: true,
       })
       .setCookie('refreshToken', refreshToken, {
         path: '/',
-        domain: 'localhost',
+        domain: process.env.ROOT_DOMAIN,
         httpOnly: true,
+        secure: true,
         expires,
       });
   }

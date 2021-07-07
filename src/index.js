@@ -12,7 +12,7 @@ import dashboardController from './controllers/dashboard.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const APP_URI = process.env.APP_URI || 'http://localhost';
+const ROOT_DOMAIN = process.env.ROOT_DOMAIN || 'localhost';
 const PORT = process.env.PORT || 7891;
 
 const app = fastify({ logger: false });
@@ -30,7 +30,7 @@ async function start() {
     app.register(accountsController, { prefix: '/api/v1/accounts' });
     app.register(dashboardController, { prefix: '/api/v1/dashboard' });
 
-    console.log(`🚀 Server launching on ${APP_URI}:${PORT}`);
+    console.log(`🚀 Server launching on https://${ROOT_DOMAIN}:${PORT}`);
     await app.listen(PORT);
   } catch (err) {
     app.log.error(err);

@@ -4,6 +4,8 @@ import { client } from '../utils/db.js';
 
 const accounts = client.db(process.env.DB_NAME).collection('accounts');
 
+accounts.createIndex({ 'email.address': 1 });
+
 export default class Account {
   id;
   email;
