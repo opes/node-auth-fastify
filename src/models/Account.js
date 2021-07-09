@@ -6,11 +6,20 @@ const accounts = client.db(process.env.DB_NAME).collection('accounts');
 
 accounts.createIndex({ 'email.address': 1 });
 
+/** Class representing an account */
 export default class Account {
   id;
   email;
   password;
+  verified;
 
+  /**
+   * Create an account instance
+   * @param {string} item._id - ObjectId of the account
+   * @param {string} item.email.address - Account's email address
+   * @param {string} item.password - Hashed password
+   * @param {boolean} item.email.verified - Email address has been verified
+   */
   constructor(item) {
     this.id = item._id.toString();
     this.email = item.email.address;
@@ -18,6 +27,13 @@ export default class Account {
     this.verified = item.email.verified;
   }
 
+  /**
+   * Saves an account to the database
+   * @param  {Object} obj - The account object
+   * @param   {string} obj.email - Account's email address
+   * @param   {string} obj.password - The hashed password
+   * @returns {Account} An Account instance
+   */
   static async create({ email, password }) {
     const exists = await accounts.findOne({ 'email.address': email });
     if (exists) throw new Error('Account exists for the given email');
@@ -34,6 +50,11 @@ export default class Account {
     return new Account(account);
   }
 
+  /**
+   * Find an account by email address
+   * @param   {string} email
+   * @returns {?Account} An Account instance or null if not found
+   */
   static async findByEmail(email) {
     const account = await accounts.findOne({ 'email.address': email });
     if (!account) return null;
@@ -41,6 +62,11 @@ export default class Account {
     return new Account(account);
   }
 
+  /**
+   * Find an account by id
+   * @param  {string} id
+   * @returns {?Account} An Account instance or null if not found
+   */
   static async findById(id) {
     const account = await accounts.findOne({ _id: ObjectId(id) });
     if (!account) return null;
@@ -48,6 +74,10 @@ export default class Account {
     return new Account(account);
   }
 
+  /**
+   * Return an account instance (without the password)
+   * @returns {Account} The Account instance
+   */
   toJSON() {
     // Omit the password when calling .toJSON()
     const { password, ...accountWithoutPassword } = this;
