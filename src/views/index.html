@@ -92,6 +92,7 @@
             headers: {
               'Content-Type': 'application/json',
             },
+            credentials: 'include',
             body: JSON.stringify({
               email: data.get('email'),
               password: data.get('password'),
