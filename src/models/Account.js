@@ -15,10 +15,12 @@ export default class Account {
 
   /**
    * Create an account instance
+   * @param {object} item - The account object from MongoDB
    * @param {string} item._id - ObjectId of the account
+   * @param {object} item.email - The account's email object
    * @param {string} item.email.address - Account's email address
-   * @param {string} item.password - Hashed password
    * @param {boolean} item.email.verified - Email address has been verified
+   * @param {string} item.password - Hashed password
    */
   constructor(item) {
     this.id = item._id.toString();
