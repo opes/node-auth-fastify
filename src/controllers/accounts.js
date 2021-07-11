@@ -58,4 +58,18 @@ export default async function routes(app, options) {
       reply.status(500).send({ success: false, message: err.message });
     }
   });
+
+  app.get('/verify/:email/:token', async (req, reply) => {
+    try {
+      const { email, token } = req.params;
+      const verified = await AccountService.verify(email, token);
+
+      reply.send({
+        success: true,
+        verified,
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  });
 }

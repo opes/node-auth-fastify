@@ -12,7 +12,7 @@ export default class AuthService {
     if (AuthService.isLoggedIn(req)) return;
 
     try {
-      const account = await AccountService.verify(req.body);
+      const account = await AccountService.validate(req.body);
       if (!account) throw new Error('Account does not exist');
 
       const session = await Session.create({

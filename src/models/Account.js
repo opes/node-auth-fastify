@@ -77,6 +77,23 @@ export default class Account {
   }
 
   /**
+   * Verify an account's email address
+   * @param  {string} email
+   */
+  static async verify(email) {
+    try {
+      await accounts.updateOne(
+        { 'email.address': email },
+        { $set: { 'email.verified': true } }
+      );
+
+      return Account.findByEmail(email);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  /**
    * Return an account instance (without the password)
    * @returns {Account} The Account instance
    */
