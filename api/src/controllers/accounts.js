@@ -59,9 +59,9 @@ export default async function routes(app, options) {
     }
   });
 
-  app.get('/verify/:email/:token', async (req, reply) => {
+  app.post('/verify', async (req, reply) => {
     try {
-      const { email, token } = req.params;
+      const { email, token } = req.body;
       const verified = await AccountService.verify(email, token);
 
       reply.send({

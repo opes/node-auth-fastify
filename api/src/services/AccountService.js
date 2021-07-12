@@ -10,10 +10,11 @@ export default class AccountService {
         throw new Error('Email & password are required.');
 
       const hash = bcrypt.hashSync(password, Number(process.env.SALT_ROUNDS));
+      const account = await Account.create({ email, password: hash });
 
       await AccountService.sendVerificationEmail(email);
 
-      return Account.create({ email, password: hash });
+      return account;
     } catch (err) {
       throw new Error(err.message);
     }
@@ -24,13 +25,13 @@ export default class AccountService {
       const mailer = new EmailService();
       const token = AccountService.verificationToken(email);
       const url = `https://${
-        process.env.ROOT_DOMAIN
-      }/api/v1/accounts/verify/${encodeURI(email)}/${token}`;
+        process.env.WEB_DOMAIN
+      }/verify/${encodeURIComponent(email)}/${token}`;
 
       await mailer.send({
         to: email,
         subject: 'Verify Email',
-        html: `<p>Please verify your email by visiting ${url}</p>`,
+        html: `<p>Please verify your email by visiting <a href="${url}">here</a></p>`,
       });
     } catch (err) {
       console.error(err);

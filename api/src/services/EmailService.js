@@ -21,7 +21,9 @@ export default class EmailService {
 
   async send({ from = 'no-reply@nodeauth.dev', to, subject, html }) {
     try {
-      await this.transporter.sendMail({ to, from, subject, html });
+      const mail = await this.transporter.sendMail({ to, from, subject, html });
+      console.log(`mail`, mail);
+      console.log(`mail preview: `, nodemailer.getTestMessageUrl(mail));
     } catch (err) {
       console.error(err);
     }
