@@ -39,7 +39,7 @@ async function start() {
         );
         const json = await res.json();
 
-        reply.status(200).send(json);
+        reply.redirect(`/?success=${json.success}&verified=${json.verified}`);
       } catch (err) {
         console.error(err);
         reply.status(500).send({
