@@ -5,6 +5,19 @@ const opts = {
       properties: {
         email: { type: 'string' },
         password: { type: 'string' },
+        oldPassword: { type: 'string' },
+        newPassword: { type: 'string' },
+      },
+    },
+    response: {
+      '2xx': {
+        type: 'object',
+        properties: {
+          success: { type: 'boolean' },
+          message: { type: 'string' },
+          verified: { type: 'boolean' },
+          payload: { type: 'object' },
+        },
       },
     },
   },
@@ -45,7 +58,7 @@ export default async function routes(app, options) {
     }
   });
 
-  app.post('/logout', async (req, reply) => {
+  app.post('/logout', opts, async (req, reply) => {
     try {
       await AuthService.logout(req, reply);
 
@@ -59,7 +72,7 @@ export default async function routes(app, options) {
     }
   });
 
-  app.post('/verify', async (req, reply) => {
+  app.post('/verify', opts, async (req, reply) => {
     try {
       const { email, token } = req.body;
       const verified = await AccountService.verify(email, token);
@@ -69,7 +82,36 @@ export default async function routes(app, options) {
         verified,
       });
     } catch (err) {
-      console.error(err);
+      app.log.error(err);
+      reply.status(500).send({ success: false, message: err.message });
+    }
+  });
+
+  app.post('/change-password', opts, async (req, reply) => {
+    try {
+      const account = await AuthService.currentUser(req, reply);
+      const { oldPassword, newPassword } = req.body;
+
+      if (account) {
+        await AccountService.changePassword({
+          email: account.email,
+          oldPassword,
+          newPassword,
+        });
+
+        reply.send({
+          success: true,
+          message: 'Password updated!',
+        });
+      }
+
+      reply.send({
+        success: false,
+        message: 'You must be signed in to continue',
+      });
+    } catch (err) {
+      app.log.error(err);
+      reply.status(500).send({ success: false, message: err.message });
     }
   });
 }

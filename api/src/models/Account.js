@@ -94,6 +94,26 @@ export default class Account {
   }
 
   /**
+   * Change an account's password
+   * @param  {string} email
+   * @param  {string} password
+   */
+  async updatePassword(password) {
+    try {
+      await accounts.updateOne(
+        { 'email.address': this.email },
+        { $set: { password } }
+      );
+
+      this.password = password;
+
+      return this;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  /**
    * Return an account instance (without the password)
    * @returns {Account} The Account instance
    */

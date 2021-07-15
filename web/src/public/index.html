@@ -30,7 +30,7 @@
       }
 
       button {
-        width: 5rem;
+        min-width: 5rem;
       }
 
       .alert {
@@ -93,6 +93,27 @@
       <button type="submit">Sign In</button>
     </form>
 
+    <h3>Change Password</h3>
+    <form
+      id="change-password-form"
+      action="https://api.nodeauth.dev/api/v1/accounts/change-password"
+      method="POST"
+    >
+      <input
+        type="password"
+        name="oldPassword"
+        placeholder="Old Password"
+        aria-label="Old Password"
+      />
+      <input
+        type="password"
+        name="newPassword"
+        placeholder="New Password"
+        aria-label="New Password"
+      />
+      <button type="submit">Change Password</button>
+    </form>
+
     <h3>Sign Out</h3>
     <form
       id="logout-form"
@@ -119,10 +140,7 @@
               'Content-Type': 'application/json',
             },
             credentials: 'include',
-            body: JSON.stringify({
-              email: data.get('email'),
-              password: data.get('password'),
-            }),
+            body: JSON.stringify(Object.fromEntries([...data.entries()])),
           });
 
           const body = await res.json();
@@ -138,10 +156,14 @@
       const registerForm = document.querySelector('#register-form');
       const loginForm = document.querySelector('#login-form');
       const logoutForm = document.querySelector('#logout-form');
+      const changePasswordForm = document.querySelector(
+        '#change-password-form'
+      );
 
       registerForm.addEventListener('submit', handleSubmit);
       loginForm.addEventListener('submit', handleSubmit);
       logoutForm.addEventListener('submit', handleSubmit);
+      changePasswordForm.addEventListener('submit', handleSubmit);
 
       const params = new URLSearchParams(window.location.search);
 

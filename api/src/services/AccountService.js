@@ -34,7 +34,7 @@ export default class AccountService {
         html: `<p>Please verify your email by visiting <a href="${url}">here</a></p>`,
       });
     } catch (err) {
-      console.error(err);
+      throw new Error(err.message);
     }
   }
 
@@ -52,7 +52,7 @@ export default class AccountService {
 
       return false;
     } catch (err) {
-      console.error(err);
+      throw new Error(err.message);
     }
   }
 
@@ -68,6 +68,31 @@ export default class AccountService {
       if (!passwordsMatch) throw new Error('Invalid email/password');
 
       return account;
+    } catch (err) {
+      throw new Error(err.message);
+    }
+  }
+
+  static async changePassword({ email, oldPassword, newPassword }) {
+    try {
+      if (!email) throw new Error('You must be logged in to continue');
+      if (!oldPassword || !newPassword)
+        throw new Error('Both the current & new password are required');
+
+      const account = await Account.findByEmail(email);
+      if (!account) throw new Error('Invalid email/password');
+
+      const passwordsMatch = bcrypt.compareSync(oldPassword, account.password);
+      if (!passwordsMatch) throw new Error('Invalid email/password');
+
+      const hash = bcrypt.hashSync(
+        newPassword,
+        Number(process.env.SALT_ROUNDS)
+      );
+
+      await account.updatePassword(hash);
+
+      return true;
     } catch (err) {
       throw new Error(err.message);
     }

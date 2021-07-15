@@ -3,13 +3,20 @@ import Account from '../models/Account.js';
 import Session from '../models/Session.js';
 import AccountService from './AccountService.js';
 
+const COOKIE_OPTS = {
+  path: '/',
+  domain: process.env.ROOT_DOMAIN,
+  httpOnly: true,
+  secure: true,
+};
+
 export default class AuthService {
   static isLoggedIn(req) {
     return req?.cookies?.refreshToken && req?.cookies?.accessToken;
   }
 
   static async login(req, reply) {
-    if (AuthService.isLoggedIn(req)) return;
+    if (AuthService.isLoggedIn(req)) await AuthService.logout(req, reply);
 
     try {
       const account = await AccountService.validate(req.body);
@@ -41,7 +48,9 @@ export default class AuthService {
         await Session.destroy(sessionId);
       }
 
-      reply.clearCookie('accessToken').clearCookie('refreshToken');
+      reply
+        .clearCookie('accessToken', COOKIE_OPTS)
+        .clearCookie('refreshToken', COOKIE_OPTS);
     } catch (err) {
       throw new Error(err.message);
     }
@@ -90,17 +99,9 @@ export default class AuthService {
     const expires = now.setDate(now.getDate() + 30);
 
     reply
-      .setCookie('accessToken', accessToken, {
-        path: '/',
-        domain: process.env.ROOT_DOMAIN,
-        httpOnly: true,
-        secure: true,
-      })
+      .setCookie('accessToken', accessToken, COOKIE_OPTS)
       .setCookie('refreshToken', refreshToken, {
-        path: '/',
-        domain: process.env.ROOT_DOMAIN,
-        httpOnly: true,
-        secure: true,
+        ...COOKIE_OPTS,
         expires,
       });
   }
