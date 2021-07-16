@@ -9,17 +9,6 @@ const opts = {
         newPassword: { type: 'string' },
       },
     },
-    response: {
-      '2xx': {
-        type: 'object',
-        properties: {
-          success: { type: 'boolean' },
-          message: { type: 'string' },
-          verified: { type: 'boolean' },
-          payload: { type: 'object' },
-        },
-      },
-    },
   },
 };
 
@@ -74,8 +63,7 @@ export default async function routes(app, options) {
 
   app.post('/verify', opts, async (req, reply) => {
     try {
-      const { email, token } = req.body;
-      const verified = await AccountService.verify(email, token);
+      const verified = await AccountService.verify(req.body);
 
       reply.send({
         success: true,
@@ -87,8 +75,24 @@ export default async function routes(app, options) {
     }
   });
 
+  app.post('/forgot-password', opts, async (req, reply) => {
+    try {
+      const { email } = req.body;
+
+      await AccountService.requestPasswordReset(email);
+
+      reply.send({
+        success: true,
+      });
+    } catch (err) {
+      app.log.error(err);
+      reply.status(500).send({ success: false, message: err.message });
+    }
+  });
+
   app.post('/change-password', opts, async (req, reply) => {
     try {
+      // TODO: Support password resets
       const account = await AuthService.currentUser(req, reply);
       const { oldPassword, newPassword } = req.body;
 

@@ -114,6 +114,21 @@
       <button type="submit">Change Password</button>
     </form>
 
+    <h3>Forgot Password?</h3>
+    <form
+      id="forgot-password-form"
+      action="https://api.nodeauth.dev/api/v1/accounts/forgot-password"
+      method="POST"
+    >
+      <input
+        type="email"
+        name="email"
+        placeholder="Email Address"
+        aria-label="Email Address"
+      />
+      <button type="submit">Request Password Reset</button>
+    </form>
+
     <h3>Sign Out</h3>
     <form
       id="logout-form"
@@ -153,17 +168,18 @@
         }
       }
 
-      const registerForm = document.querySelector('#register-form');
-      const loginForm = document.querySelector('#login-form');
-      const logoutForm = document.querySelector('#logout-form');
-      const changePasswordForm = document.querySelector(
-        '#change-password-form'
-      );
+      const forms = [
+        '#register-form',
+        '#login-form',
+        '#logout-form',
+        '#change-password-form',
+        '#forgot-password-form',
+      ];
 
-      registerForm.addEventListener('submit', handleSubmit);
-      loginForm.addEventListener('submit', handleSubmit);
-      logoutForm.addEventListener('submit', handleSubmit);
-      changePasswordForm.addEventListener('submit', handleSubmit);
+      forms.map((id) => {
+        const form = document.querySelector(id);
+        form.addEventListener('submit', handleSubmit);
+      });
 
       const params = new URLSearchParams(window.location.search);
 
