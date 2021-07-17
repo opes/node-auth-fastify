@@ -19,7 +19,7 @@ export default class AuthService {
     if (AuthService.isLoggedIn(req)) await AuthService.logout(req, reply);
 
     try {
-      const account = await AccountService.validate(req.body);
+      const account = await AccountService.getValidAccount(req.body);
       if (!account) throw new Error('Account does not exist');
 
       const session = await Session.create({

@@ -1,0 +1,39 @@
+html,
+body {
+  font-family: sans-serif;
+  background-color: #111;
+  color: #eee;
+  padding: 1rem;
+}
+
+pre {
+  width: 100vw;
+  white-space: break-spaces;
+  word-break: break-word;
+}
+
+input,
+button {
+  padding: 0.2rem;
+}
+
+hr {
+  margin: 3rem 0;
+}
+
+button {
+  min-width: 5rem;
+}
+
+.alert {
+  padding: 1rem;
+  border-radius: 5px;
+}
+
+.alert-success {
+  background: linear-gradient(#00aa00, #007700);
+}
+
+.alert-error {
+  background: linear-gradient(#aa0000, #770000);
+}

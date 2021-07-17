@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>node-auth-fastify :: Reset Password</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+
+  <body>
+    <h1>Reset Password</h1>
+    <div class="alert" style="display: none"></div>
+    <h3>Change Password</h3>
+    <form
+      id="reset-password-form"
+      action="https://api.nodeauth.dev/api/v1/accounts/reset-password"
+      method="POST"
+    >
+      <input
+        type="password"
+        name="password"
+        placeholder="Password"
+        aria-label="Password"
+        required
+      />
+
+      <input type="hidden" name="expires" />
+      <input type="hidden" name="email" />
+      <input type="hidden" name="token" />
+      <button type="submit">Change Password</button>
+    </form>
+
+    <hr />
+
+    <h3 id="response-header"></h3>
+    <pre id="response-body"></pre>
+
+    <script>
+      const [expires, email, token] = window.location.pathname
+        .split('/')
+        .slice(-3);
+      const values = { expires, email: decodeURIComponent(email), token };
+
+      Object.keys(values).map((id) => {
+        document.querySelector(`input[name=${id}]`).value = values[id];
+      });
+    </script>
+    <script src="/app.js"></script>
+  </body>
+</html>

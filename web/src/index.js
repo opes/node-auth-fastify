@@ -49,27 +49,8 @@ async function start() {
       }
     });
 
-    app.get(
-      '/reset-password/:expires/:email/:token',
-      {},
-      async (req, reply) => {
-        try {
-          const { email, expires, token } = req.params;
-
-          // TODO: Create UI for changing password
-          reply.send({
-            email,
-            expires: new Date(Number(expires)).toDateString(),
-            token,
-          });
-        } catch (err) {
-          console.error(err);
-          reply.status(500).send({
-            success: false,
-            status: 'ERROR',
-          });
-        }
-      }
+    app.get('/reset-password/:expires/:email/:token', {}, async (req, reply) =>
+      reply.sendFile('reset.html')
     );
 
     console.log(`🚀 Server launching on https://${ROOT_DOMAIN}:${PORT}`);

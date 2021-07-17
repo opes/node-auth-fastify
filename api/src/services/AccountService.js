@@ -22,7 +22,7 @@ export default class AccountService {
     }
   }
 
-  static async verify({ email, token, expires = '' }) {
+  static async verifyEmail({ email, token, expires = '' }) {
     try {
       if (AccountService.token(email, expires) === token) {
         await Account.verify(email);
@@ -35,26 +35,50 @@ export default class AccountService {
     }
   }
 
+  static async savePassword({ account, password }) {
+    try {
+      const hash = bcrypt.hashSync(password, Number(process.env.SALT_ROUNDS));
+
+      await account.updatePassword(hash);
+    } catch (err) {
+      throw new Error(err.message);
+    }
+  }
+
   static async changePassword({ email, oldPassword, newPassword }) {
     try {
       if (!email) throw new Error('You must be logged in to continue');
       if (!oldPassword || !newPassword)
         throw new Error('Both the current & new password are required');
 
-      const account = await Account.findByEmail(email);
-      if (!account) throw new Error('Invalid email/password');
+      const account = await AccountService.getValidAccount({
+        email,
+        password: oldPassword,
+      });
 
-      const passwordsMatch = bcrypt.compareSync(oldPassword, account.password);
-      if (!passwordsMatch) throw new Error('Invalid email/password');
-
-      const hash = bcrypt.hashSync(
-        newPassword,
-        Number(process.env.SALT_ROUNDS)
-      );
-
-      await account.updatePassword(hash);
+      await AccountService.savePassword({ account, password: newPassword });
 
       return true;
+    } catch (err) {
+      throw new Error(err.message);
+    }
+  }
+
+  static async resetPassword({ email, password, token, expires }) {
+    try {
+      const account = await Account.findByEmail(email);
+      if (!account) throw new Error('Invalid email');
+
+      const isValidToken = AccountService.token(email, expires) === token;
+      const isExpired = Number(expires) < Date.now();
+
+      if (isValidToken && !isExpired) {
+        await AccountService.savePassword({ account, password });
+
+        return true;
+      }
+
+      return false;
     } catch (err) {
       throw new Error(err.message);
     }
@@ -71,7 +95,7 @@ export default class AccountService {
     }
   }
 
-  static async validate({ email, password }) {
+  static async getValidAccount({ email, password }) {
     try {
       if (!email || !password)
         throw new Error('Email & password are required.');

@@ -63,7 +63,7 @@ export default async function routes(app, options) {
 
   app.post('/verify', opts, async (req, reply) => {
     try {
-      const verified = await AccountService.verify(req.body);
+      const verified = await AccountService.verifyEmail(req.body);
 
       reply.send({
         success: true,
@@ -92,7 +92,6 @@ export default async function routes(app, options) {
 
   app.post('/change-password', opts, async (req, reply) => {
     try {
-      // TODO: Support password resets
       const account = await AuthService.currentUser(req, reply);
       const { oldPassword, newPassword } = req.body;
 
@@ -113,6 +112,17 @@ export default async function routes(app, options) {
         success: false,
         message: 'You must be signed in to continue',
       });
+    } catch (err) {
+      app.log.error(err);
+      reply.status(500).send({ success: false, message: err.message });
+    }
+  });
+
+  app.post('/reset-password', opts, async (req, reply) => {
+    try {
+      const success = await AccountService.resetPassword(req.body);
+
+      reply.send({ success });
     } catch (err) {
       app.log.error(err);
       reply.status(500).send({ success: false, message: err.message });
