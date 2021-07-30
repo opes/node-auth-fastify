@@ -1,3 +1,5 @@
+import { STATUS } from '../utils/constants.js';
+
 const opts = {
   schema: {
     body: {
@@ -35,11 +37,15 @@ export default async function routes(app, options) {
 
   app.post('/login', opts, async (req, reply) => {
     try {
-      await AuthService.login(req, reply);
+      const status = await AuthService.login(req, reply);
 
       reply.send({
         success: true,
-        message: `Logged in!`,
+        status,
+        message:
+          status === STATUS.requires2fa
+            ? `2FA Required before logging in`
+            : `Logged in!`,
       });
     } catch (err) {
       app.log.error(err);
@@ -123,6 +129,30 @@ export default async function routes(app, options) {
       const success = await AccountService.resetPassword(req.body);
 
       reply.send({ success });
+    } catch (err) {
+      app.log.error(err);
+      reply.status(500).send({ success: false, message: err.message });
+    }
+  });
+
+  app.post('/register-2fa', {}, async (req, reply) => {
+    try {
+      const { token, secret } = req.body;
+      const account = await AuthService.currentUser(req, reply);
+      const success = await AuthService.register2fa({ account, secret, token });
+
+      reply.send({ success });
+    } catch (err) {
+      app.log.error(err);
+      reply.status(500).send({ success: false, message: err.message });
+    }
+  });
+
+  app.get('/self', {}, async (req, reply) => {
+    try {
+      const account = await AuthService.currentUser(req, reply);
+
+      reply.send({ success: true, account });
     } catch (err) {
       app.log.error(err);
       reply.status(500).send({ success: false, message: err.message });

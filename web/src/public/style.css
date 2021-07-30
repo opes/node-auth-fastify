@@ -1,24 +1,29 @@
 html,
 body {
   font-family: sans-serif;
-  background-color: #111;
+  background-color: #0d1117;
   color: #eee;
   padding: 1rem;
 }
 
+form {
+  margin: 1rem 0 2rem;
+}
+
 pre {
-  width: 100vw;
+  font-size: 1.1rem;
   white-space: break-spaces;
   word-break: break-word;
 }
 
 input,
 button {
-  padding: 0.2rem;
+  padding: 0.3rem 0.5rem;
 }
 
 hr {
   margin: 3rem 0;
+  border-color: #333;
 }
 
 button {

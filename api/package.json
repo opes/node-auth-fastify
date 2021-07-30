@@ -20,7 +20,8 @@
     "fastify-static": "^4.2.2",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.6.9",
-    "nodemailer": "^6.6.2"
+    "nodemailer": "^6.6.2",
+    "otplib": "^12.0.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.7"

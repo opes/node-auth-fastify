@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>2FA :: node-auth-fastify</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://unpkg.com/qrcode@1.4.4/build/qrcode.min.js"></script>
+    <script src="https://unpkg.com/@otplib/preset-browser@^12.0.0/buffer.js"></script>
+    <script src="https://unpkg.com/@otplib/preset-browser@^12.0.0/index.js"></script>
+    <link
+      rel="stylesheet"
+      href="//unpkg.com/@highlightjs/cdn-assets@11.1.0/styles/github-dark.min.css"
+    />
+    <script src="//unpkg.com/@highlightjs/cdn-assets@11.1.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <h1>🔐 2FA</h1>
+
+    <div id="qr"></div>
+
+    <form
+      action="https://api.nodeauth.dev/api/v1/accounts/register-2fa"
+      method="POST"
+      id="token-form"
+    >
+      <label for="token"><input type="text" name="token" id="token" /></label>
+      <input type="hidden" name="secret" id="secret" />
+      <button type="submit">Submit</button>
+    </form>
+
+    <hr />
+
+    <h3 id="response-header"></h3>
+    <pre><code id="response-body" class="language-json"></code></pre>
+
+    <script>
+      (async () => {
+        const res = await fetch(
+          'https://api.nodeauth.dev/api/v1/accounts/self',
+          {
+            method: 'GET',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+          }
+        );
+        const { account } = await res.json();
+
+        if (account?.email) {
+          const { otplib, QRCode } = window;
+          const secret = otplib.authenticator.generateSecret();
+          const otpauth = otplib.authenticator.keyuri(
+            account.email,
+            'node-auth-fastify',
+            secret
+          );
+          const imageUrl = await QRCode.toDataURL(otpauth);
+          const qrWrapper = document.querySelector('#qr');
+          const qr = document.createElement('img');
+
+          qr.src = imageUrl;
+          qrWrapper.appendChild(qr);
+          document.querySelector('#secret').value = secret;
+        }
+      })();
+    </script>
+    <script src="app.js"></script>
+  </body>
+</html>

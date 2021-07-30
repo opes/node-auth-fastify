@@ -4,12 +4,17 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>node-auth-fastify :: Reset Password</title>
+    <title>Reset Password :: node-auth-fastify</title>
     <link rel="stylesheet" href="/style.css" />
+    <link
+      rel="stylesheet"
+      href="//unpkg.com/@highlightjs/cdn-assets@11.1.0/styles/github-dark.min.css"
+    />
+    <script src="//unpkg.com/@highlightjs/cdn-assets@11.1.0/highlight.min.js"></script>
   </head>
 
   <body>
-    <h1>Reset Password</h1>
+    <h1>♻️ Reset Password</h1>
     <div class="alert" style="display: none"></div>
     <h3>Change Password</h3>
     <form
@@ -34,7 +39,7 @@
     <hr />
 
     <h3 id="response-header"></h3>
-    <pre id="response-body"></pre>
+    <pre><code id="response-body" class="language-json"></code></pre>
 
     <script>
       const [expires, email, token] = window.location.pathname

@@ -12,6 +12,7 @@ export default class Account {
   email;
   password;
   verified;
+  authenticator;
 
   /**
    * Create an account instance
@@ -21,12 +22,14 @@ export default class Account {
    * @param {string} item.email.address - Account's email address
    * @param {boolean} item.email.verified - Email address has been verified
    * @param {string} item.password - Hashed password
+   * @param {string} item.authenticator - 2FA Secret
    */
   constructor(item) {
     this.id = item._id.toString();
     this.email = item.email.address;
     this.password = item.password;
     this.verified = item.email.verified;
+    this.authenticator = item.authenticator;
   }
 
   /**
@@ -113,6 +116,21 @@ export default class Account {
     }
   }
 
+  async updateAuthenticator(authenticator) {
+    try {
+      await accounts.updateOne(
+        { 'email.address': this.email },
+        { $set: { authenticator } }
+      );
+
+      this.authenticator = authenticator;
+
+      return this;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   /**
    * Return an account instance (without the password)
    * @returns {Account} The Account instance
@@ -122,5 +140,15 @@ export default class Account {
     const { password, ...accountWithoutPassword } = this;
 
     return accountWithoutPassword;
+  }
+
+  static fromJSON({ id, email, verified, authenticator = '' }) {
+    const accountDoc = {
+      _id: id,
+      email: { address: email, verified },
+      authenticator,
+    };
+
+    return new Account(accountDoc);
   }
 }

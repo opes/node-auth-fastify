@@ -49,7 +49,7 @@ export default class AccountService {
       if (!oldPassword || !newPassword)
         throw new Error('Both the current & new password are required');
 
-      const account = await AccountService.getValidAccount({
+      const account = await AccountService.getVerifiedAccount({
         email,
         password: oldPassword,
       });
@@ -93,7 +93,7 @@ export default class AccountService {
     }
   }
 
-  static async getValidAccount({ email, password }) {
+  static async getVerifiedAccount({ email, password }) {
     try {
       if (!email || !password)
         throw new Error('Email & password are required.');

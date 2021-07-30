@@ -20,6 +20,12 @@ async function start() {
       root: path.join(__dirname, 'public'),
     });
 
+    app.get('/2fa', {}, async (req, reply) => reply.sendFile('2fa.html'));
+
+    app.get('/reset-password/:expires/:email/:token', {}, async (req, reply) =>
+      reply.sendFile('reset.html')
+    );
+
     app.get('/verify/:email/:token', {}, async (req, reply) => {
       try {
         const { email, token } = req.params;
@@ -48,10 +54,6 @@ async function start() {
         });
       }
     });
-
-    app.get('/reset-password/:expires/:email/:token', {}, async (req, reply) =>
-      reply.sendFile('reset.html')
-    );
 
     console.log(`🚀 Server launching on https://${ROOT_DOMAIN}:${PORT}`);
     await app.listen(PORT);

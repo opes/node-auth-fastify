@@ -15,7 +15,8 @@ async function handleSubmit(event) {
     const body = await res.json();
 
     document.querySelector('#response-header').textContent = 'Response:';
-    document.querySelector('#response-body').textContent = JSON.stringify(body);
+    document.querySelector('#response-body').textContent = JSON.stringify(body, null, 2);
+    hljs.highlightAll();
   } catch (err) {
     console.error(err.message);
   }
@@ -29,6 +30,7 @@ function configureForms() {
     '#change-password-form',
     '#forgot-password-form',
     '#reset-password-form',
+    '#token-form',
   ];
 
   forms.map((id) => {

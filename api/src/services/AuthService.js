@@ -1,14 +1,11 @@
 import jwt from 'jsonwebtoken';
+import { authenticator } from 'otplib';
+
 import Account from '../models/Account.js';
 import Session from '../models/Session.js';
 import AccountService from './AccountService.js';
 
-const COOKIE_OPTS = {
-  path: '/',
-  domain: process.env.ROOT_DOMAIN,
-  httpOnly: true,
-  secure: true,
-};
+import { COOKIE_OPTS, STATUS } from '../utils/constants.js';
 
 export default class AuthService {
   static isLoggedIn(req) {
@@ -19,8 +16,14 @@ export default class AuthService {
     if (AuthService.isLoggedIn(req)) await AuthService.logout(req, reply);
 
     try {
-      const account = await AccountService.getValidAccount(req.body);
+      const account = await AccountService.getVerifiedAccount(req.body);
       if (!account) throw new Error('Account does not exist');
+
+      const { authenticator = '' } = account;
+
+      if (authenticator) {
+        return STATUS.requires2fa;
+      }
 
       const session = await Session.create({
         ip: req.ip,
@@ -33,7 +36,7 @@ export default class AuthService {
 
       AuthService.setCookies(reply, { account, session });
 
-      return true;
+      return STATUS.success;
     } catch (err) {
       throw new Error(err.message);
     }
@@ -56,13 +59,25 @@ export default class AuthService {
     }
   }
 
+  static async register2fa({ account, secret, token }) {
+    try {
+      const isValid = authenticator.verify({ secret, token });
+
+      if (isValid) await account.updateAuthenticator(secret);
+
+      return isValid ? STATUS.success : STATUS.error;
+    } catch (err) {
+      throw new Error(err.message);
+    }
+  }
+
   static async currentUser(req, reply) {
     try {
       if (req?.cookies?.accessToken) {
         const { accessToken } = req.cookies;
         const { account } = jwt.verify(accessToken, process.env.JWT_SECRET);
 
-        return account;
+        return Account.fromJSON(account);
       }
 
       if (req?.cookies?.refreshToken) {
@@ -78,6 +93,8 @@ export default class AuthService {
           return account.toJSON();
         }
       }
+
+      return null;
     } catch (err) {
       throw new Error(err.message);
     }
