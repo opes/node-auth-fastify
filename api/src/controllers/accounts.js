@@ -148,6 +148,17 @@ export default async function routes(app, options) {
     }
   });
 
+  app.post('/verify-2fa', {}, async (req, reply) => {
+    try {
+      const status = await AuthService.login(req, reply);
+
+      reply.send({ success: true, status });
+    } catch (err) {
+      app.log.error(err);
+      reply.status(500).send({ success: false, message: err.message });
+    }
+  });
+
   app.get('/self', {}, async (req, reply) => {
     try {
       const account = await AuthService.currentUser(req, reply);

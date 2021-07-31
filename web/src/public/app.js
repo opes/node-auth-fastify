@@ -1,41 +1,56 @@
-async function handleSubmit(event) {
-  event.preventDefault();
-  const data = new FormData(event.target);
+function createSubmitHandler(callback = () => {}) {
+  return async (event) => {
+    event.preventDefault();
+    const data = new FormData(event.target);
 
-  try {
-    const res = await fetch(event.target.action, {
-      method: event.target.method,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(Object.fromEntries([...data.entries()])),
-    });
+    try {
+      const values = Object.fromEntries([...data.entries()]);
+      const res = await fetch(event.target.action, {
+        method: event.target.method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(values),
+      });
+      const body = await res.json();
 
-    const body = await res.json();
+      callback(values, body);
 
-    document.querySelector('#response-header').textContent = 'Response:';
-    document.querySelector('#response-body').textContent = JSON.stringify(body, null, 2);
-    hljs.highlightAll();
-  } catch (err) {
-    console.error(err.message);
-  }
+      document.querySelector('#response-header').textContent = 'Response:';
+      document.querySelector('#response-body').textContent = JSON.stringify(
+        body,
+        null,
+        2
+      );
+      hljs.highlightAll();
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
 }
 
 function configureForms() {
-  const forms = [
-    '#register-form',
-    '#login-form',
-    '#logout-form',
-    '#change-password-form',
-    '#forgot-password-form',
-    '#reset-password-form',
-    '#token-form',
-  ];
+  const forms = {
+    '#register-form': () => {},
+    '#login-form': (values, res) => {
+      if (res.status === '2FA') {
+        const { email, password } = values;
+        document.querySelector('#token-form input[name="email"]').value = email;
+        document.querySelector('#token-form input[name="password"]').value =
+          password;
+      }
+    },
+    '#logout-form': () => {},
+    '#change-password-form': () => {},
+    '#forgot-password-form': () => {},
+    '#reset-password-form': () => {},
+    '#token-form': () => {},
+  };
 
-  forms.map((id) => {
+  Object.entries(forms).map(async ([id, callback]) => {
     const form = document.querySelector(id);
-    form && form.addEventListener('submit', handleSubmit);
+    form?.addEventListener('submit', createSubmitHandler(callback));
   });
 }
 

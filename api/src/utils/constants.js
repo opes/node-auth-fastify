@@ -6,6 +6,7 @@ export const COOKIE_OPTS = {
 };
 
 export const STATUS = {
+  invalid2fa: '2FA-ERROR',
   requires2fa: '2FA',
   success: 'SUCCESS',
   error: 'ERROR',

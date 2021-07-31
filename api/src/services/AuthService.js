@@ -19,10 +19,17 @@ export default class AuthService {
       const account = await AccountService.getVerifiedAccount(req.body);
       if (!account) throw new Error('Account does not exist');
 
-      const { authenticator = '' } = account;
+      const { authenticatorSecret = '' } = account;
 
-      if (authenticator) {
-        return STATUS.requires2fa;
+      if (authenticatorSecret) {
+        if (!req.body.token) return STATUS.requires2fa;
+        
+        const isValid = authenticator.verify({
+          secret: authenticatorSecret,
+          token: req.body.token,
+        });
+
+        if (!isValid) return STATUS.invalid2fa;
       }
 
       const session = await Session.create({
