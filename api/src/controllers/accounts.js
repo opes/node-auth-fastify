@@ -152,7 +152,11 @@ export default async function routes(app, options) {
     try {
       const status = await AuthService.login(req, reply);
 
-      reply.send({ success: true, status });
+      reply.send({
+        success: true,
+        message:
+          status === STATUS.invalid2fa ? '2FA token invalid' : 'Logged in!',
+      });
     } catch (err) {
       app.log.error(err);
       reply.status(500).send({ success: false, message: err.message });
